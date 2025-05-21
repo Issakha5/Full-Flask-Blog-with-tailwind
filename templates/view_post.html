@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+
+ <!-- Afficher les messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="p-2 mb-4 text-white rounded {% if category == 'error' %}bg-red-500{% else %}bg-green-500{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+<!-- Blog post with featured image -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Blog post header -->
+        <div class="py-8">
+            <h1 class="text-3xl font-bold mb-2">{{post.title}}</h1>
+            <p class="text-gray-500 text-sm">Published on <time datetime="2022-04-05">{{post.created_at.strftime('%d-%m-%Y %H:%M')}}</time></p>
+        </div>
+
+        <!-- Featured image -->
+         {% if post.img_post_view %}
+  <img src="{{ url_for('serve_image', post_id=post.id) }}"  alt="Featured image" class="w-full h-auto mb-8">
+        {% else %}
+  <p>No image available ....</p>
+{% endif %}
+        <!-- Blog post content -->
+        <p class="text-gray-700 text-xs mt-2">Written By:
+            <a href="#"
+                class="text-indigo-600 font-medium hover:text-gray-900 transition duration-500 ease-in-out">
+                {{current_user.first_name}} {{current_user.last_name}}
+            </a>
+        </p>
+        <div class="prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto mb-5">
+            <p>{{post.content}}</p>
+        </div>
+        {% if post.comments %}
+            {% if post.comments %}
+                    <h2>Comments:</h2>
+                    <hr>
+                    <p>
+                {% for comment in post.comments %}
+                    <p>{{ comment.author }} : {{ comment.content }}</p>
+                {% endfor %}
+                    </p>
+            {% endif %}
+        {% endif %}
+        <div class="block m-4">
+
+        <form action="{{url_for('view_post', id=post.id)}}" method="post" enctype="multipart/form-data" class="space-y-4">
+
+        <div >
+            <label for="post_content" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Leave a comment...:</label>
+            <textarea type="text" name="content" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Leave a comment..."></textarea>
+        </div>
+         <div >
+            <input type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" value="Add comment">
+        </div>
+
+        </form>
+    </div>
+
+
+    <div class="flex flex-wrap items-center mt-5 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+        {% if current_user.username == post.author and current_user.is_authenticated %}
+            <div class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+                <a href="/delete/{{post.id}}/" class="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">DELETE BLOG</a>
+
+
+                <a href="/update/{{post.id}}/" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">EDIT POST</a>   
+            </div>                
+        {% endif  %}   
+            <div class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+                <small class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+                    Go back to homepage? <a href="{{url_for('index')}}" >Home</a>
+                </small>                         
+            </div>
+    </div>
+
+    </div>
+</div>
+
+
+
+{% endblock content %}
